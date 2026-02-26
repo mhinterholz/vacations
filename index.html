@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Envio de Períodos por Email</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .periodo {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Enviar Períodos por Email</h2>
+
+    <form onsubmit="enviarEmail(); return false;">
+
+        <div id="periodos">
+            <div class="periodo">
+                <label>Data Inicial:</label><br>
+                <input type="date" class="dataInicio" required><br><br>
+
+                <label>Data Final:</label><br>
+                <input type="date" class="dataFim" required>
+            </div>
+        </div>
+
+        <button type="button" onclick="adicionarPeriodo()">Adicionar Período</button><br><br>
+
+        <button type="submit">Enviar</button>
+
+    </form>
+
+    <script>
+        function adicionarPeriodo() {
+            var container = document.getElementById("periodos");
+
+            var novoPeriodo = document.createElement("div");
+            novoPeriodo.className = "periodo";
+
+            novoPeriodo.innerHTML = `
+                <label>Data Inicial:</label><br>
+                <input type="date" class="dataInicio" required><br><br>
+
+                <label>Data Final:</label><br>
+                <input type="date" class="dataFim" required>
+            `;
+
+            container.appendChild(novoPeriodo);
+        }
+
+        function enviarEmail() {
+            var email = "destino@email.com"; // 🔹 ALTERE AQUI
+            var assunto = "Envio de Períodos";
+
+            var inicios = document.querySelectorAll(".dataInicio");
+            var fins = document.querySelectorAll(".dataFim");
+
+            var corpo = "Olá,\n\nSegue(m) o(s) período(s) selecionado(s):\n\n";
+
+            for (var i = 0; i < inicios.length; i++) {
+                corpo += "Período " + (i + 1) + ":\n";
+                corpo += "Data Inicial: " + inicios[i].value + "\n";
+                corpo += "Data Final: " + fins[i].value + "\n\n";
+            }
+
+            corpo += "Obrigado.";
+
+            var mailtoLink = "mailto:" + email +
+                "?subject=" + encodeURIComponent(assunto) +
+                "&body=" + encodeURIComponent(corpo);
+
+            window.location.href = mailtoLink;
+        }
+    </script>
+
+</body>
+</html>
