@@ -1,87 +1,122 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <title>Envio de Períodos por Email</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2it Vacations (Project)</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f9; padding: 40px 20px; display: flex; justify-content: center; }
+  .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+  
+  /* DESTAQUE DO TÍTULO */
+  h1 { 
+    text-align: center; 
+    color: #1a73e8; 
+    font-size: 32px; /* Aumentado */
+    font-weight: 800; 
+    margin-top: 0;
+    margin-bottom: 5px;
+    letter-spacing: -1px;
+  }
+  
+  h3 { text-align: center; color: #5f6368; font-weight: 400; margin-bottom: 30px; font-size: 16px; }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .periodo {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-        button {
-            margin-top: 10px;
-        }
-    </style>
+  .periodo { margin-bottom: 15px; padding: 15px; border: 1px solid #dfe1e5; border-radius: 8px; position: relative; background: #fafafa; }
+  label { font-weight: bold; display: block; margin-bottom: 5px; color: #3c4043; }
+  input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+  
+  .btn-add { background-color: #f1f3f4; color: #1a73e8; border: 1px solid #1a73e8; padding: 10px; width: 100%; border-radius: 4px; cursor: pointer; margin-bottom: 15px; font-weight: bold; transition: 0.3s; }
+  .btn-add:hover { background-color: #e8f0fe; }
+  
+  .btn-submit { background-color: #1a73e8; color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .btn-submit:hover { background-color: #1765cc; }
+  
+  .btn-remove { position: absolute; top: 10px; right: 10px; background: #d93025; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+</style>
 </head>
 <body>
 
-    <h2>Enviar Períodos por Email</h2>
+<div class="container">
+  <h1>A2it Vacations</h1>
+  <h3>Registo de Férias</h3>
+  
+  <form id="formulario">
+    <label>Nome do Colaborador:</label>
+    <input type="text" id="nome" placeholder="Digite seu nome completo" required>
 
-    <form onsubmit="enviarEmail(); return false;">
+    <div id="periodos-container">
+      <div class="periodo">
+        <label>Data Inicial:</label>
+        <input type="date" class="dataInicio" required>
+        <label>Data Final:</label>
+        <input type="date" class="dataFim" required>
+      </div>
+    </div>
 
-        <div id="periodos">
-            <div class="periodo">
-                <label>Data Inicial:</label><br>
-                <input type="date" class="dataInicio" required><br><br>
+    <button type="button" class="btn-add" onclick="adicionarPeriodo()">+ Adicionar Outro Período</button>
+    <button type="submit" class="btn-submit">Enviar Pedido</button>
+  </form>
+</div>
 
-                <label>Data Final:</label><br>
-                <input type="date" class="dataFim" required>
-            </div>
-        </div>
+<script>
+function adicionarPeriodo() {
+  const container = document.getElementById("periodos-container");
+  const novo = document.createElement("div");
+  novo.classList.add("periodo");
+  novo.innerHTML = `
+    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+    <label>Data Inicial:</label>
+    <input type="date" class="dataInicio" required>
+    <label>Data Final:</label>
+    <input type="date" class="dataFim" required>
+  `;
+  container.appendChild(novo);
+}
 
-        <button type="button" onclick="adicionarPeriodo()">Adicionar Período</button><br><br>
+document.getElementById("formulario").addEventListener("submit", function(e) {
+  e.preventDefault();
 
-        <button type="submit">Enviar</button>
+  const nome = document.getElementById("nome").value;
+  const inicios = document.querySelectorAll(".dataInicio");
+  const fins = document.querySelectorAll(".dataFim");
+  
+  let periodosParaEnviar = [];
+  for (let i = 0; i < inicios.length; i++) {
+    periodosParaEnviar.push({
+      inicio: inicios[i].value,
+      fim: fins[i].value
+    });
+  }
 
-    </form>
+  const url = "https://script.google.com/macros/s/AKfycbyTVjIb6q0jOxAux7EBT0XXVMakt34jo2sRPOpmSM5SxfI1hWfrIoZZe4IFd1x6YBsG/exec";
 
-    <script>
-        function adicionarPeriodo() {
-            var container = document.getElementById("periodos");
-
-            var novoPeriodo = document.createElement("div");
-            novoPeriodo.className = "periodo";
-
-            novoPeriodo.innerHTML = `
-                <label>Data Inicial:</label><br>
-                <input type="date" class="dataInicio" required><br><br>
-
-                <label>Data Final:</label><br>
-                <input type="date" class="dataFim" required>
-            `;
-
-            container.appendChild(novoPeriodo);
-        }
-
-        function enviarEmail() {
-            var email = "destino@email.com"; // 🔹 ALTERE AQUI
-            var assunto = "Envio de Períodos";
-
-            var inicios = document.querySelectorAll(".dataInicio");
-            var fins = document.querySelectorAll(".dataFim");
-
-            var corpo = "Olá,\n\nSegue(m) o(s) período(s) selecionado(s):\n\n";
-
-            for (var i = 0; i < inicios.length; i++) {
-                corpo += "Período " + (i + 1) + ":\n";
-                corpo += "Data Inicial: " + inicios[i].value + "\n";
-                corpo += "Data Final: " + fins[i].value + "\n\n";
-            }
-
-            corpo += "Obrigado.";
-
-            var mailtoLink = "mailto:" + email +
-                "?subject=" + encodeURIComponent(assunto) +
-                "&body=" + encodeURIComponent(corpo);
-
-            window.location.href = mailtoLink;
-        }
-    </script>
+  fetch(url, {
+    method: "POST",
+    mode: "no-cors", 
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nome: nome,
+      periodos: periodosParaEnviar
+    })
+  })
+  .then(() => {
+    alert("Dados enviados!"); 
+    document.getElementById("formulario").reset();
+    document.getElementById("periodos-container").innerHTML = `
+      <div class="periodo">
+        <label>Data Inicial:</label>
+        <input type="date" class="dataInicio" required>
+        <label>Data Final:</label>
+        <input type="date" class="dataFim" required>
+      </div>
+    `;
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Erro ao enviar.");
+  });
+});
+</script>
 
 </body>
 </html>
